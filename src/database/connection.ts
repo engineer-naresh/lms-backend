@@ -12,7 +12,7 @@ sequelize.authenticate().then(() => {
 }).catch((error) => {
    console.log("Database connection failed" + error)
 })
-sequelize.sync({ force: true })
+sequelize.sync({ alter: false })
 .then(() => { console.log("Migration successfull") })
 .catch((error)=>{
    console.log("Migration failed" + error)

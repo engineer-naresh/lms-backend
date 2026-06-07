@@ -2,6 +2,12 @@ import type { Request, Response } from 'express';
 import User from '../../src/database/models/user.model.ts';
 
 const registerUser = async (req:Request ,res:Response)=>{
+if(req.body==undefined){
+    console.log("Data not received");
+   res.status(400).json({
+    "message": "Data not received"
+   })
+}    
 const {username, email, password}=req.body;
 if(!username|| !email || !password){
     res.status(400).json({

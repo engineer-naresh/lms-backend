@@ -7,6 +7,7 @@ config();
 const sequelize = new Sequelize(`${DB_URL}`, {
    dialect: 'postgres',
    logging: true,
+   timezone: '+05:45',
    models: [models],
 });
 sequelize.authenticate().then(() => {

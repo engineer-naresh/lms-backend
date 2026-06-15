@@ -38,5 +38,10 @@ class User extends Model {
 
     })
     declare role:string
-}
+
+    @Column({
+        type:DataType.STRING
+    })
+    declare currentInstituteNumber:string
+ }
 export default User;

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from "../database/models/user.model.ts";
 interface IExtendedRequest extends Request {
     user?: {
+        id:string,
         email: string,
         role: string,
         username: string | null,
@@ -17,7 +18,7 @@ const isLoggedIn = async (req: IExtendedRequest, res: Response, next: NextFuncti
         })
         return
     }
-    jwt.verify(token, '', async (error, result: any) => {
+    jwt.verify(token, 'secrettoken', async (error, result: any) => {
         if (error) {
             res.status(403).json({
                 message: "Token"
@@ -29,9 +30,8 @@ const isLoggedIn = async (req: IExtendedRequest, res: Response, next: NextFuncti
                     message: "No user with token , invalid token"
                 })
             } else {
-                req.user = { email: userData.email, role: userData.role, username: userData.username, };
-                if (!req.user) {
-                }
+                req.user = userData;
+                
                 next();
             }
 

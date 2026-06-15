@@ -2,9 +2,18 @@ import type { Request, Response } from 'express';
 import sequelize from '../../src/database/connection.ts';
 import generateRandomNumber from '../../services/generateRandomNumber.ts';
 import { QueryTypes } from 'sequelize';
+import User from '../../src/database/models/user.model.ts';
+interface IExtendedRequest extends Request {
+    user?: {
+        id: string,
+        userId:string,
+        email: string,
+        role: string,
+        username: string | null,
+    }
+}
+const createInstitute = async (req: IExtendedRequest, res: Response) => {
 
-const createInstitute = async (req: Request, res: Response) => {
-    const instituteCode = generateRandomNumber();
     const { instituteName, instituteEmail, institutePhoneNumber, instituteAddress } = req.body;
     const instituteVatNo = req.body.instituteVatNo || null;
     const institutePanVatNo = req.body.institutePanVatNo || null;
@@ -14,6 +23,8 @@ const createInstitute = async (req: Request, res: Response) => {
         })
         return
     }
+
+    const instituteCode = generateRandomNumber();
     // 1. Enable the built-in Supabase extension (only need to do this once per database)
     // await sequelize.query(`CREATE EXTENSION IF NOT EXISTS moddatetime SCHEMA extensions;`);
     await sequelize.query(`CREATE TABLE IF NOT EXISTS "institute_${instituteCode}" (
@@ -34,18 +45,35 @@ const createInstitute = async (req: Request, res: Response) => {
     //     FOR EACH ROW EXECUTE PROCEDURE extensions.moddatetime("updatedAt");
     // `);
     await sequelize.query(
-    `INSERT INTO "institute_${instituteCode}" 
+        `INSERT INTO "institute_${instituteCode}" 
     ("instituteName", "instituteEmail", "institutePhoneNumber", "instituteAddress", "instituteVatNo", "institutePanVatNo") 
     VALUES ($1, $2, $3, $4, $5, $6)`,
-    {
-        bind: [instituteName, instituteEmail, institutePhoneNumber, instituteAddress, instituteVatNo, institutePanVatNo],
-        type: QueryTypes.INSERT,// Optional: Good practice to tell Sequelize what type of query it is
+        {
+            bind: [instituteName, instituteEmail, institutePhoneNumber, instituteAddress, instituteVatNo, institutePanVatNo],
+            type: QueryTypes.INSERT,// Optional: Good practice to tell Sequelize what type of query it is
+        }
+    )
+    //history of institute created by user
+        sequelize.query(`CREATE TABLE IF NOT EXISTS "user_institute"(
+            id SERIAL PRIMARY KEY,
+            "userId" UUID references users(id),
+            "instituteNumber" VARCHAR(255) UNIQUE
+            )`)
+    if (req.user) {
+        // const user =  await User.findByPk(req.user.id)
+        // if(user){
+        // user.currentInstituteNumber = "institute_${instituteCode}" ;
+        // await user.save();
+        // }
+        await User.update({ currentInstituteNumber: instituteCode,
+            role:"institute"
+         }, { where: { id: req.user.id } })
     }
-)
-res.status(201).json({
-    message: "Institute created successfully!"
-})
-    }
+
+    res.status(201).json({
+        message: "Institute created successfully!"
+    })
+}
 
 // const createTeacher = async(req:Request, res: Response)=>{
 //     await sequelize.query(`CREATE TABLE TEACHER_${instituteCode} (

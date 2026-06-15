@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import sequelize from '../../src/database/connection.ts';
 import generateRandomNumber from '../../services/generateRandomNumber.ts';
 import { QueryTypes } from 'sequelize';
@@ -10,9 +10,10 @@ interface IExtendedRequest extends Request {
         email: string,
         role: string,
         username: string | null,
-    }
+    },
+    instituteNumber?: string | number
 }
-const createInstitute = async (req: IExtendedRequest, res: Response) => {
+const createInstitute = async (req: IExtendedRequest, res: Response, next: NextFunction) => {
 
     const { instituteName, instituteEmail, institutePhoneNumber, instituteAddress } = req.body;
     const instituteVatNo = req.body.instituteVatNo || null;
@@ -65,6 +66,12 @@ const createInstitute = async (req: IExtendedRequest, res: Response) => {
         // user.currentInstituteNumber = "institute_${instituteCode}" ;
         // await user.save();
         // }
+        sequelize.query(`INSERT INTO "user_institute" ("userId", "instituteNumber") VALUES ($1, $2)`,
+            {
+                bind: [req.user.id, instituteCode],
+                type: QueryTypes.INSERT
+            }
+        )
         await User.update({ currentInstituteNumber: instituteCode,
             role:"institute"
          }, { where: { id: req.user.id } })
@@ -73,15 +80,17 @@ const createInstitute = async (req: IExtendedRequest, res: Response) => {
     res.status(201).json({
         message: "Institute created successfully!"
     })
+    req.instituteNumber = instituteCode;
+next();
 }
 
-// const createTeacher = async(req:Request, res: Response)=>{
-//     await sequelize.query(`CREATE TABLE TEACHER_${instituteCode} (
-//         id INT PRIMARY KEY SERIAL,
-//         "teacherName" VARCHAR(255) NOT NULL,
-//         "teacherEmail" VARCHAR(255) NOT NULL,
-//         "teacherPhoneNumber" VARCHAR(255) NOT NULL,
-
-//     )`)
-// }    
-export default createInstitute;
+const createTeacher = async (req: IExtendedRequest, res: Response) => {
+const instituteNumber = req.instituteNumber;
+await sequelize.query(`CREATE TABLE IF NOT EXISTS "teacher_${instituteNumber}" (
+    id SERIAL PRIMARY KEY,
+    "teacherName" VARCHAR(255) NOT NULL,
+    "teacherEmail" VARCHAR(255) NOT NULL,
+    "teacherPhoneNumber" VARCHAR(255) NOT NULL
+)`);  
+}
+export {createInstitute, createTeacher};

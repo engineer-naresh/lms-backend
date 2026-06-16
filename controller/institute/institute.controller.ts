@@ -19,10 +19,10 @@ const createInstitute = async (req: IExtendedRequest, res: Response, next: NextF
     const instituteVatNo = req.body.instituteVatNo || null;
     const institutePanVatNo = req.body.institutePanVatNo || null;
     if (!instituteName || !instituteEmail || !institutePhoneNumber || !instituteAddress) {
-        res.status(400).json({
+      return res.status(400).json({
             message: "Please provide institute Name, instituteEmail, institutePhoneNumber, instituteAddress"
         })
-        return
+        return 
     }
 
     const instituteCode = generateRandomNumber();
@@ -77,20 +77,42 @@ const createInstitute = async (req: IExtendedRequest, res: Response, next: NextF
          }, { where: { id: req.user.id } })
     }
 
-    res.status(201).json({
-        message: "Institute created successfully!"
-    })
     req.instituteNumber = instituteCode;
 next();
 }
 
-const createTeacher = async (req: IExtendedRequest, res: Response) => {
+const createTeacher = async (req: IExtendedRequest, res: Response, next: NextFunction) => {
 const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "teacher_${instituteNumber}" (
     id SERIAL PRIMARY KEY,
     "teacherName" VARCHAR(255) NOT NULL,
-    "teacherEmail" VARCHAR(255) NOT NULL,
-    "teacherPhoneNumber" VARCHAR(255) NOT NULL
-)`);  
+    "teacherEmail" VARCHAR(255) NOT NULL UNIQUE,
+    "teacherPhoneNumber" VARCHAR(255) NOT NULL UNIQUE
+)`);
+next();
 }
-export {createInstitute, createTeacher};
+
+
+const createStudent = async (req: IExtendedRequest, res: Response, next: NextFunction) => {
+const instituteNumber = req.instituteNumber;
+await sequelize.query(`CREATE TABLE IF NOT EXISTS "student_${instituteNumber}" (
+    id SERIAL PRIMARY KEY,
+    "studentName" VARCHAR(255) NOT NULL,
+    "studentPhoneNumber" VARCHAR(255) NOT NULL UNIQUE
+)`);
+next();
+}
+
+const createCourse = async (req: IExtendedRequest, res: Response) => {
+const instituteNumber = req.instituteNumber;
+await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
+    id SERIAL PRIMARY KEY,
+    "courseName" VARCHAR(255) NOT NULL,
+    "coursePrice" VARCHAR(255) NOT NULL UNIQUE
+)`);
+ res.status(201).json({
+        message: "course created successfully!",
+        instituteNumber
+    })
+}
+export {createInstitute, createTeacher, createStudent, createCourse};

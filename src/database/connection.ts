@@ -6,7 +6,7 @@ import { config } from "dotenv";
 config();
 const sequelize = new Sequelize(`${DB_URL}`, {
    dialect: 'postgres',
-   logging: true,
+   logging: console.log,
    timezone: '+05:45',
    models: [models],
 });

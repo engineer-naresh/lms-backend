@@ -1,15 +1,21 @@
 import type { Request, Response, NextFunction } from "express"
-
+interface IExtendedRequest extends Request {
+    user?: {
+        id:string,
+        email: string,
+        role: string,
+        username: string | null,
+    }
+}
 const asyncErrorHandler = (fn: Function) => {
-    return (res: Response, req: Request, next: NextFunction) => {
+    return (req: IExtendedRequest, res: Response, next: NextFunction) => {
 
-        fn(res, req, next).catch((err: Error) => {
+        fn(req,res, next).catch((err: Error) => {
             res.status(500).json({
-                error: err.message,
-                fullerror: err
-            }
-            )
-        })
+                message: err.message,
+                error:err
+            })}
+        )
     }
 }
 export default asyncErrorHandler;

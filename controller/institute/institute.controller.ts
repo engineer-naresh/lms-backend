@@ -87,7 +87,12 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "teacher_${instituteNumber}" (
     id SERIAL PRIMARY KEY,
     "teacherName" VARCHAR(255) NOT NULL,
     "teacherEmail" VARCHAR(255) NOT NULL UNIQUE,
-    "teacherPhoneNumber" VARCHAR(255) NOT NULL UNIQUE
+    "teacherPhoneNumber" VARCHAR(255) NOT NULL UNIQUE,
+    "teacherExpertise" VARCHAR(255),
+    "joinedDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP::date,
+    "salary" VARCHAR(100),
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`);
 next();
 }
@@ -98,7 +103,13 @@ const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "student_${instituteNumber}" (
     id SERIAL PRIMARY KEY,
     "studentName" VARCHAR(255) NOT NULL,
-    "studentPhoneNumber" VARCHAR(255) NOT NULL UNIQUE
+    "studentPhoneNumber" VARCHAR(255) NOT NULL UNIQUE,
+    "studentAddress" TEXT,
+    "enrolledDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP::date,
+    "studentImage" VARCHAR(255),
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 )`);
 next();
 }
@@ -108,7 +119,13 @@ const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
     id SERIAL PRIMARY KEY,
     "courseName" VARCHAR(255) NOT NULL,
-    "coursePrice" VARCHAR(255) NOT NULL UNIQUE
+    "coursePrice" VARCHAR(255) NOT NULL,
+    "courseDuration" VARCHAR(100) NOT NULL ,
+    "courseDescription" TEXT,
+    "courseLevel" VARCHAR(50) NOT NULL CHECK ("courseLevel" IN ('beginner', 'intermediate', 'advanced')),
+    "courseThumbnail" VARCHAR(100),
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`);
  res.status(201).json({
         message: "course created successfully!",

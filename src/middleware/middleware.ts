@@ -7,6 +7,7 @@ interface IExtendedRequest extends Request {
         email: string,
         role: string,
         username: string | null,
+        currentInstituteNumber:string
     }
 }
 
@@ -24,7 +25,11 @@ const isLoggedIn = async (req: IExtendedRequest, res: Response, next: NextFuncti
                 message: "Token"
             })
         } else {
-            const userData = await User.findByPk(result.id);
+            const userData = await User.findByPk(result.id,
+                {
+                    attributes: ['id', 'currentInstituteNumber']
+                }
+            );
             if (!userData) {
                 res.status(403).json({
                     message: "No user with token , invalid token"

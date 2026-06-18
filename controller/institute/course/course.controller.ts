@@ -1,12 +1,13 @@
-import type { Response } from 'express';
+import { request, type Response } from 'express';
 import { QueryTypes } from 'sequelize';
 import sequelize from '../../../src/database/connection.ts';
 import { type IExtendedRequest } from "../../../src/middleware/type.ts";
 
 const createCourse = async (req: IExtendedRequest, res: Response) => {
     const instituteNumber = req.user?.currentInstituteNumber;
-    const { courseName, coursePrice, courseDuration, courseDescription, courseLevel}:any = req.body;
-    const courseThumbnail= null
+   
+    const { courseName, coursePrice, courseDuration, courseDescription, courseLevel} = req.body;
+    const courseThumbnail =req.file?.filename;
     if (!courseName || !coursePrice || !courseDuration || !courseDescription || !courseLevel) {
         return res.status(400).json({
             message: "Please provide all course details: name, price, duration, description, level, and thumbnail."

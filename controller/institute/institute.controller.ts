@@ -120,10 +120,10 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
     id SERIAL PRIMARY KEY,
     "courseName" VARCHAR(255) NOT NULL,
     "coursePrice" VARCHAR(255) NOT NULL,
-    "courseDuration" VARCHAR(100) NOT NULL ,
+    "courseDuration" VARCHAR(255) NOT NULL ,
     "courseDescription" TEXT,
-    "courseLevel" VARCHAR(50) NOT NULL CHECK ("courseLevel" IN ('beginner', 'intermediate', 'advanced')),
-    "courseThumbnail" VARCHAR(100),
+    "courseLevel" VARCHAR(255) NOT NULL CHECK ("courseLevel" IN ('beginner', 'intermediate', 'advanced')),
+    "courseThumbnail" VARCHAR(255),
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`);

@@ -5,9 +5,8 @@ import instituteRoute from '../route/institute/institute.route.ts';
 import courseRoute from '../route/institute/course/course.route.ts';
 import studentRoute from '../route/institute/student/student.route.ts';
 app.use(express.json());
-
 app.use('/api',authRoute);
 app.use('/api',instituteRoute);
-app.use('/api',courseRoute);
-app.use('/api',studentRoute);
+app.use('/api/institute',courseRoute);
+app.use('/api/institute',studentRoute);
 export default app

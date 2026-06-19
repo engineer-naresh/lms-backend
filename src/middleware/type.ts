@@ -8,7 +8,9 @@ export interface IExtendedRequest extends Request {
         role: string,
         username: string | null,
         currentInstituteNumber:string
+        
     },
+    categoryDescription:String,
     file?: Express.Multer.File;
     files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
 

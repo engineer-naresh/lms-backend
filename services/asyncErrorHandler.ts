@@ -5,6 +5,7 @@ interface IExtendedRequest extends Request {
         email: string,
         role: string,
         username: string | null,
+        currentInstituteNumber:string
     }
 }
 const asyncErrorHandler = (fn: Function) => {

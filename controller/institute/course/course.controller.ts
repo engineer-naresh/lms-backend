@@ -7,7 +7,9 @@ const createCourse = async (req: IExtendedRequest, res: Response) => {
     const instituteNumber = req.user?.currentInstituteNumber;
    
     const { courseName, coursePrice, courseDuration, courseDescription, courseLevel} = req.body;
-    const courseThumbnail =req.file?.filename;
+    const courseThumbnail =req.file?.path;
+    console.log(req.body);
+    console.log(req.file);
     if (!courseName || !coursePrice || !courseDuration || !courseDescription || !courseLevel) {
         return res.status(400).json({
             message: "Please provide all course details: name, price, duration, description, level, and thumbnail."

@@ -16,6 +16,7 @@ const upload = multer({ storage: storage,
     }
  });
 const router:Router = express.Router();
-router.route('/course').post(asyncErrorHandler(isLoggedIn), upload.single('courseThumbnail'), asyncErrorHandler(createCourse)).get(asyncErrorHandler(getAllCourse));
+router.route('/course').post(asyncErrorHandler(isLoggedIn), upload.single('courseThumbnail'), asyncErrorHandler(createCourse));
+router.route('/course').get(asyncErrorHandler(isLoggedIn),asyncErrorHandler(getAllCourse))
 router.route('/course/:id').get(asyncErrorHandler(getSingleCourse)).delete(asyncErrorHandler(isLoggedIn), asyncErrorHandler(deleteCourse))  ;
 export default router;

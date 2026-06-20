@@ -4,9 +4,10 @@ import generateRandomNumber from '../../services/generateRandomNumber.ts';
 import { QueryTypes } from 'sequelize';
 import User from '../../src/database/models/user.model.ts';
 import categories from '../../src/seed.ts';
+import type { UUID } from 'crypto';
 interface IExtendedRequest extends Request {
     user?: {
-        id: string,
+        id: string | UUID,
         userId:string,
         email: string,
         role: string,
@@ -30,7 +31,7 @@ const createInstitute = async (req: IExtendedRequest, res: Response, next: NextF
     // 1. Enable the built-in Supabase extension (only need to do this once per database)
     // await sequelize.query(`CREATE EXTENSION IF NOT EXISTS moddatetime SCHEMA extensions;`);
     await sequelize.query(`CREATE TABLE IF NOT EXISTS "institute_${instituteCode}" (
-    id SERIAL PRIMARY KEY,
+   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "instituteName" VARCHAR(255) NOT NULL,
     "instituteEmail" VARCHAR(255) NOT NULL,
     "institutePhoneNumber" VARCHAR(255) NOT NULL,
@@ -57,7 +58,7 @@ const createInstitute = async (req: IExtendedRequest, res: Response, next: NextF
     )
     //history of institute created by user
         sequelize.query(`CREATE TABLE IF NOT EXISTS "user_institute"(
-            id SERIAL PRIMARY KEY,
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             "userId" UUID references users(id),
             "instituteNumber" VARCHAR(255) UNIQUE
             )`)
@@ -85,7 +86,7 @@ next();
 const createTeacher = async (req: IExtendedRequest, res: Response, next: NextFunction) => {
 const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "teacher_${instituteNumber}" (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "teacherName" VARCHAR(255) NOT NULL,
     "teacherEmail" VARCHAR(255) NOT NULL UNIQUE,
     "teacherPhoneNumber" VARCHAR(255) NOT NULL UNIQUE,
@@ -102,7 +103,7 @@ next();
 const createStudent = async (req: IExtendedRequest, res: Response, next: NextFunction) => {
 const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "student_${instituteNumber}" (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "studentName" VARCHAR(255) NOT NULL,
     "studentPhoneNumber" VARCHAR(255) NOT NULL UNIQUE,
     "studentAddress" TEXT,
@@ -118,11 +119,12 @@ next();
 const createCourse = async (req: IExtendedRequest, res: Response) => {
 const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "courseName" VARCHAR(255) NOT NULL,
     "coursePrice" VARCHAR(255) NOT NULL,
     "courseDuration" VARCHAR(255) NOT NULL ,
     "courseDescription" TEXT,
+    "categoryId" UUID NOT NULL REFERENCES category_${instituteNumber} (id),
     "courseLevel" VARCHAR(255) NOT NULL CHECK ("courseLevel" IN ('beginner', 'intermediate', 'advanced')),
     "courseThumbnail" VARCHAR(255),
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -136,7 +138,7 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
 const createCategory = async (req:IExtendedRequest,res:Response,next:NextFunction)=>{
     const instituteNumber = req.instituteNumber;
     await sequelize.query(`CREATE TABLE IF NOT EXISTs "category_${instituteNumber}"(
-        id SERIAL PRIMARY KEY,
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         "categoryName" VARCHAR(100) NOT NULL UNIQUE,
         "categoryDescription" TEXT,
         "createdAT" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

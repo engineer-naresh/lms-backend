@@ -6,7 +6,7 @@ import { type IExtendedRequest } from "../../../src/middleware/type.ts";
 const createCourse = async (req: IExtendedRequest, res: Response) => {
     const instituteNumber = req.user?.currentInstituteNumber;
 
-    const { courseName, coursePrice, courseDuration, courseDescription, courseLevel, categoryId } = req.body;
+    const { courseName, coursePrice, courseDuration, courseDescription, courseLevel, categoryId} = req.body;
     const courseThumbnail = req.file?.path || null;
     console.log(req.body);
     console.log(req.file);
@@ -56,7 +56,7 @@ const deleteCourse = async (req: IExtendedRequest, res: Response) => {
 const getAllCourse = async (req: IExtendedRequest, res: Response) => {
     const instituteNumber = req.user?.currentInstituteNumber;
 const courses = await sequelize.query(
-    `SELECT * FROM "course_${instituteNumber}" 
+    `SELECT "course_${instituteNumber}".*  FROM "course_${instituteNumber}" 
      JOIN "category_${instituteNumber}" 
      ON "course_${instituteNumber}"."categoryId" = "category_${instituteNumber}"."id"`,
     { type: QueryTypes.SELECT }

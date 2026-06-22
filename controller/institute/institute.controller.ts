@@ -84,7 +84,7 @@ next();
 }
 
 const createTeacher = async (req: IExtendedRequest, res: Response, next: NextFunction) => {
-const instituteNumber = req.instituteNumber;
+const instituteNumber =  req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "teacher_${instituteNumber}" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "teacherName" VARCHAR(255) NOT NULL,
@@ -93,6 +93,9 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "teacher_${instituteNumber}" (
     "teacherExpertise" VARCHAR(255),
     "joinedDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP::date,
     "salary" VARCHAR(100),
+    "courseId" UUID REFERENCES course_${instituteNumber}(id), 
+    "teacherPhoto" VARCHAR(255),
+    "teacherPassword" VARCHAR(255),
     "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`);
@@ -116,7 +119,7 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "student_${instituteNumber}" (
 next();
 }
 
-const createCourse = async (req: IExtendedRequest, res: Response) => {
+const createCourse = async (req: IExtendedRequest, res: Response, next:NextFunction) => {
 const instituteNumber = req.instituteNumber;
 await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -124,6 +127,7 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
     "coursePrice" VARCHAR(255) NOT NULL,
     "courseDuration" VARCHAR(255) NOT NULL ,
     "courseDescription" TEXT,
+    "teacherId" UUID,
     "categoryId" UUID NOT NULL REFERENCES category_${instituteNumber} (id),
     "courseLevel" VARCHAR(255) NOT NULL CHECK ("courseLevel" IN ('beginner', 'intermediate', 'advanced')),
     "courseThumbnail" VARCHAR(255),
@@ -134,11 +138,13 @@ await sequelize.query(`CREATE TABLE IF NOT EXISTS "course_${instituteNumber}" (
         message: "course created successfully!",
         instituteNumber
     })
+    next();
 }
+
 const createCategory = async (req:IExtendedRequest,res:Response,next:NextFunction)=>{
     const instituteNumber = req.instituteNumber;
     await sequelize.query(`CREATE TABLE IF NOT EXISTs "category_${instituteNumber}"(
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         "categoryName" VARCHAR(100) NOT NULL UNIQUE,
         "categoryDescription" TEXT,
         "createdAT" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -3,6 +3,6 @@ import  {createInstitute,  createStudent,  createTeacher, createCourse, createCa
 import isLoggedIn from '../../src/middleware/middleware.ts';
 import asyncErrorHandler from '../../services/asyncErrorHandler.ts';
 const router:Router = express.Router();
-router.route('/institute').post(asyncErrorHandler(isLoggedIn) ,asyncErrorHandler(createInstitute), asyncErrorHandler(createTeacher), asyncErrorHandler(createStudent), asyncErrorHandler(createCategory),asyncErrorHandler(createCourse));
+router.route('/institute').post(asyncErrorHandler(isLoggedIn) ,asyncErrorHandler(createInstitute),asyncErrorHandler(createCategory), asyncErrorHandler(createCourse),asyncErrorHandler(createTeacher), asyncErrorHandler(createStudent));
 // router.route('/teacher').post(createTeacher);
 export default router;

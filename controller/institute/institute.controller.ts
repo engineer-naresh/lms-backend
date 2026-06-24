@@ -78,7 +78,7 @@ const createInstitute = async (req: IExtendedRequest, res: Response, next: NextF
             role:"institute"
          }, { where: { id: req.user.id } })
     }
-
+    
     req.instituteNumber = instituteCode;
 next();
 }

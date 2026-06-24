@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import User from '../../src/database/models/user.model.ts';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import generateJwtToken from '../../services/generateJwtToken.ts';
 
 const registerUser = async (req: Request, res: Response) => {
     if (req.body == undefined) {
@@ -51,7 +52,7 @@ const loginUser = async (req: Request, res: Response) => {
         if (user && user.password) {
             const isPasswordMatch = bcrypt.compareSync(password, user.password);
             if (isPasswordMatch) {
-                const token = jwt.sign({ id: user.id }, 'secrettoken', { expiresIn: "30d" })
+                const token = generateJwtToken({id:user.id});
                 res.json({
                     token:token,
                     message:"logged in success!",

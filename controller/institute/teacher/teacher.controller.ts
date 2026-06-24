@@ -3,11 +3,13 @@ import type { IExtendedRequest } from "../../../src/middleware/type.ts";
 import sequelize from "../../../src/database/connection.ts";
 import { QueryTypes } from "sequelize";
 import generateRandomPassword from "../../../services/generateRandomPassword.ts";
+import sendMail from "../../../services/sendMail.ts";
+
 const createTeacher = async(req:IExtendedRequest,res:Response)=>{
 const instituteNumber = req.user?.currentInstituteNumber;
 const teacherPhoto = req.file?req.file.path:"https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg"
-const {teacherName,teacherEmail, teacherPhoneNumber, teacherExpertise, joinedDate , salary, teacherPassword,courseId} =req.body;
-    if(!teacherName || !teacherEmail || !teacherPhoneNumber || !teacherExpertise || !joinedDate || !salary || !teacherPassword ||! courseId){
+const {teacherName,teacherEmail, teacherPhoneNumber, teacherExpertise, joinedDate , salary, courseId} =req.body;
+    if(!teacherName || !teacherEmail || !teacherPhoneNumber || !teacherExpertise || !joinedDate || !salary ||! courseId){
        return res.status(404).json({
             message:"Teacher name, teacher email, teacherphonenumber, teacher expertise, teacher salary, teacher joined date, teacher Password is required field"
         })
@@ -31,7 +33,13 @@ const {teacherName,teacherEmail, teacherPhoneNumber, teacherExpertise, joinedDat
             bind:[teacherData[0]?.id, courseId],
             type:QueryTypes.UPDATE
         })
-
+        // send mail using nodemailer
+        const mailInformation = {
+        to: teacherEmail,
+        subject: "welcome to LMS system",
+        text: `welcome to teachers group of LMS system, here is your account login information, <b>Email</b>: ${teacherEmail}, <b>password</b>: ${data.plainVersion} <b>Institute Number</b> : ${instituteNumber}`
+        }
+        await sendMail(mailInformation);
         res.status(200).json({
             message:"Teacher created"
         })
